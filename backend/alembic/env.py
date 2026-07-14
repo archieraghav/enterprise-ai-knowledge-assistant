@@ -9,7 +9,7 @@ from app.core.config import settings
 from app.db.base import Base
 
 # Import all models here so Alembic can detect them for autogenerate.
-# (Left empty for now — populated starting Day 7 when models are added.)
+from app.models import Organization, User  # noqa: F401
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url)
