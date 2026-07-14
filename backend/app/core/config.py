@@ -26,5 +26,51 @@ class Settings(BaseSettings):
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
         )
 
+def load_settings() -> Settings:
+    """Load settings, preferring AWS Secrets Manager in production environments."""
+    base_settings = Settings()
 
-settings = Settings()
+    if base_settings.environment != "production":
+        return base_settings
+
+    from app.core.secrets import get_secret
+
+    secret_data = get_secret("knowledge-assistant/prod")
+    if secret_data is None:
+        return base_settings
+
+    return Settings(**{**base_settings.model_dump(), **secret_data})
+
+
+def load_settings() -> Settings:
+    """Load settings, preferring AWS Secrets Manager in production environments."""
+    base_settings = Settings()
+
+    if base_settings.environment != "production":
+        return base_settings
+
+    from app.core.secrets import get_secret
+
+    secret_data = get_secret("knowledge-assistant/prod")
+    if secret_data is None:
+        return base_settings
+
+    return Settings(**{**base_settings.model_dump(), **secret_data})
+
+
+def load_settings() -> Settings:
+    """Load settings, preferring AWS Secrets Manager in production environments."""
+    base_settings = Settings()
+
+    if base_settings.environment != "production":
+        return base_settings
+
+    from app.core.secrets import get_secret
+
+    secret_data = get_secret("knowledge-assistant/prod")
+    if secret_data is None:
+        return base_settings
+
+    return Settings(**{**base_settings.model_dump(), **secret_data})
+
+settings = load_settings()
