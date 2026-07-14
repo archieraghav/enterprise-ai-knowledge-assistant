@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     postgres_db: str = "knowledge_assistant"
     postgres_host: str = "localhost"
     postgres_port: int = 5432
+    jwt_secret_key: str = "change-me-in-production"
+    jwt_algorithm: str = "HS256"
+    jwt_access_token_expire_minutes: int = 30
+    jwt_refresh_token_expire_days: int = 7
 
     @property
     def database_url(self) -> str:
