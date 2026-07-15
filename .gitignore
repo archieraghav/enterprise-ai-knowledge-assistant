@@ -9,3 +9,4 @@ __pycache__/
 htmlcov/
 test*.txt
 revenue.txt
+faiss_indexes/
