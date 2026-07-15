@@ -12,6 +12,7 @@ def ingest_document_text(
     organization_id: uuid.UUID,
     document_id: uuid.UUID,
     document_title: str,
+    file_type: str,
     extracted_text: str,
 ) -> int:
     """Chunk, embed, and store a document's extracted text in the vector store.
@@ -42,6 +43,7 @@ def ingest_document_text(
             "document_id": str(document_id),
             "organization_id": str(organization_id),
             "document_title": document_title,
+            "file_type": file_type,
             "chunk_index": chunk.chunk_index,
             "start_char": chunk.start_char,
             "end_char": chunk.end_char,

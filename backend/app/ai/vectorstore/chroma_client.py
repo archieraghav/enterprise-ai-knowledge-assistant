@@ -23,3 +23,22 @@ def get_or_create_collection(collection_name: str) -> Collection:
 def get_organization_collection_name(organization_id: str) -> str:
     """Build a namespaced collection name so each organization's vectors stay isolated."""
     return f"org_{organization_id.replace('-', '_')}"
+
+def search_collection(
+    collection_name: str,
+    query_embedding: list[float],
+    top_k: int = 5,
+    where: dict | None = None,
+) -> dict:
+    """Run a similarity search against a collection, with optional metadata filtering."""
+    client = get_chroma_client()
+    collection = client.get_or_create_collection(name=collection_name)
+
+    query_kwargs: dict = {
+        "query_embeddings": [query_embedding],
+        "n_results": top_k,
+    }
+    if where is not None:
+        query_kwargs["where"] = where
+
+    return collection.query(**query_kwargs)

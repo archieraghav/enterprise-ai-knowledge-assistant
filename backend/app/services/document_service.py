@@ -83,6 +83,7 @@ async def create_document(
                 organization_id=current_user.organization_id,
                 document_id=document.id,
                 document_title=file.filename,
+                file_type=extension,
                 extracted_text=extracted_text,
             )
         except Exception:
