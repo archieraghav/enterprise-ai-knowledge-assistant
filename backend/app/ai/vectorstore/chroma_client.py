@@ -37,6 +37,7 @@ def search_collection(
     query_kwargs: dict = {
         "query_embeddings": [query_embedding],
         "n_results": top_k,
+        "include": ["documents", "metadatas", "distances"],
     }
     if where is not None:
         query_kwargs["where"] = where
