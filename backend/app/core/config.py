@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     s3_bucket_name: str = ""
     max_upload_size_mb: int = 25
     tesseract_cmd_path: str = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+    chroma_host: str = "localhost"
+    chroma_port: int = 8001
 
     @property
     def database_url(self) -> str:
