@@ -1,10 +1,11 @@
 import uuid
 
 from fastapi import UploadFile
+from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
-from app.core.exceptions import ValidationException
+from app.core.exceptions import NotFoundException, ValidationException
 from app.models.document import Document
 from app.models.document_version import DocumentVersion
 from app.models.user import User
@@ -64,3 +65,51 @@ async def create_document(
     await db.commit()
     await db.refresh(document)
     return document
+
+
+async def list_documents(
+    db: AsyncSession,
+    organization_id: uuid.UUID,
+    page: int = 1,
+    page_size: int = 20,
+) -> tuple[list[Document], int]:
+    """Return a paginated list of non-deleted documents for an organization."""
+    base_query = select(Document).where(
+        Document.organization_id == organization_id,
+        Document.is_deleted.is_(False),
+    )
+
+    count_query = select(func.count()).select_from(base_query.subquery())
+    total = (await db.execute(count_query)).scalar_one()
+
+    paginated_query = (
+        base_query.order_by(Document.created_at.desc())
+        .offset((page - 1) * page_size)
+        .limit(page_size)
+    )
+    result = await db.execute(paginated_query)
+    documents = list(result.scalars().all())
+
+    return documents, total
+
+
+async def get_document(db: AsyncSession, organization_id: uuid.UUID, document_id: uuid.UUID) -> Document:
+    """Retrieve a single document, scoped to the requesting organization."""
+    result = await db.execute(
+        select(Document).where(
+            Document.id == document_id,
+            Document.organization_id == organization_id,
+            Document.is_deleted.is_(False),
+        )
+    )
+    document = result.scalar_one_or_none()
+    if document is None:
+        raise NotFoundException("Document not found")
+    return document
+
+
+async def soft_delete_document(db: AsyncSession, organization_id: uuid.UUID, document_id: uuid.UUID) -> None:
+    """Mark a document as deleted without removing its underlying data."""
+    document = await get_document(db, organization_id, document_id)
+    document.is_deleted = True
+    await db.commit()
