@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 
-from app.api.v1 import auth, compare, documents, faq, qa, reports, streaming, summarize, system, users
+from app.api.v1 import auth, compare, documents, faq, qa, reports, search, streaming, summarize, system, users
 
 api_router = APIRouter()
 api_router.include_router(system.router)
@@ -13,3 +13,4 @@ api_router.include_router(summarize.router)
 api_router.include_router(compare.router)
 api_router.include_router(reports.router)
 api_router.include_router(faq.router)
+api_router.include_router(search.router)
