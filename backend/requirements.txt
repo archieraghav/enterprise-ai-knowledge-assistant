@@ -24,3 +24,5 @@ sentence-transformers==3.2.1
 chromadb==0.5.15
 google-generativeai==0.8.3
 openai==1.54.4
+langgraph==0.2.53
+langchain-core==0.3.15
