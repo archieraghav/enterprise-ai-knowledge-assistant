@@ -34,6 +34,13 @@ class Settings(BaseSettings):
     tesseract_cmd_path: str = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
     chroma_host: str = "localhost"
     chroma_port: int = 8001
+    llm_provider: str = "gemini"
+    gemini_api_key: str = ""
+    gemini_model: str = "gemini-2.0-flash"
+    openai_api_key: str = ""
+    openai_model: str = "gpt-4o-mini"
+    ollama_base_url: str = "http://localhost:11434"
+    ollama_model: str = "llama3.1"
 
     @property
     def database_url(self) -> str:
