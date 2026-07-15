@@ -1,3 +1,5 @@
+from collections.abc import AsyncIterator
+
 import google.generativeai as genai
 
 from app.ai.llm.base_llm import BaseLLM
@@ -15,3 +17,10 @@ class GeminiProvider(BaseLLM):
         full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
         response = await self._model.generate_content_async(full_prompt)
         return response.text
+
+    async def generate_stream(self, prompt: str, system_prompt: str | None = None) -> AsyncIterator[str]:
+        full_prompt = f"{system_prompt}\n\n{prompt}" if system_prompt else prompt
+        response = await self._model.generate_content_async(full_prompt, stream=True)
+        async for chunk in response:
+            if chunk.text:
+                yield chunk.text

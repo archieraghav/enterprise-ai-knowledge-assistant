@@ -1,3 +1,5 @@
+from collections.abc import AsyncIterator
+
 from openai import AsyncOpenAI
 
 from app.ai.llm.base_llm import BaseLLM
@@ -21,3 +23,19 @@ class OpenAIProvider(BaseLLM):
             messages=messages,
         )
         return response.choices[0].message.content or ""
+
+    async def generate_stream(self, prompt: str, system_prompt: str | None = None) -> AsyncIterator[str]:
+        messages = []
+        if system_prompt:
+            messages.append({"role": "system", "content": system_prompt})
+        messages.append({"role": "user", "content": prompt})
+
+        stream = await self._client.chat.completions.create(
+            model=settings.openai_model,
+            messages=messages,
+            stream=True,
+        )
+        async for chunk in stream:
+            delta = chunk.choices[0].delta.content
+            if delta:
+                yield delta
