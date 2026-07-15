@@ -2,6 +2,9 @@ import uuid
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile, status
 from sqlalchemy.ext.asyncio import AsyncSession
+from app.schemas.document_version import DocumentVersionResponse, VersionHistoryResponse
+from app.services.versioning_service import create_new_version, get_version_history
+
 
 from app.api.dependencies import get_current_active_user
 from app.db.session import get_db
@@ -60,3 +63,28 @@ async def delete_document(
     db: AsyncSession = Depends(get_db),
 ) -> None:
     await soft_delete_document(db, current_user.organization_id, document_id)
+
+
+
+@router.post("/{document_id}/versions", response_model=DocumentVersionResponse, status_code=status.HTTP_201_CREATED)
+async def upload_new_version(
+    document_id: uuid.UUID,
+    file: UploadFile = File(...),
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> DocumentVersionResponse:
+    version = await create_new_version(db, current_user.organization_id, document_id, file)
+    return DocumentVersionResponse.model_validate(version)
+
+
+@router.get("/{document_id}/versions", response_model=VersionHistoryResponse)
+async def get_document_versions(
+    document_id: uuid.UUID,
+    current_user: User = Depends(get_current_active_user),
+    db: AsyncSession = Depends(get_db),
+) -> VersionHistoryResponse:
+    versions = await get_version_history(db, current_user.organization_id, document_id)
+    return VersionHistoryResponse(
+        document_id=document_id,
+        versions=[DocumentVersionResponse.model_validate(v) for v in versions],
+    )
