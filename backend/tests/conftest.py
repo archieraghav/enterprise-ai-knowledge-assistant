@@ -12,6 +12,13 @@ from app.db.base import Base
 from app.db.session import get_db
 from app.main import app
 
+import boto3
+import pytest
+from moto import mock_aws
+
+from app.core.config import settings
+
+
 # Use a separate test database so tests never touch real dev data.
 TEST_DATABASE_URL = settings.database_url.rsplit("/", 1)[0] + "/knowledge_assistant_test"
 
@@ -42,3 +49,16 @@ async def client() -> AsyncGenerator[AsyncClient, None]:
     transport = ASGITransport(app=app)
     async with AsyncClient(transport=transport, base_url="http://test") as ac:
         yield ac
+
+
+
+@pytest.fixture(autouse=True)
+def mock_s3_bucket():
+    """Provide a mocked S3 bucket for every test, so no real AWS calls are made."""
+    with mock_aws():
+        client = boto3.client("s3", region_name=settings.aws_region)
+        client.create_bucket(
+            Bucket=settings.s3_bucket_name,
+            CreateBucketConfiguration={"LocationConstraint": settings.aws_region},
+        )
+        yield
