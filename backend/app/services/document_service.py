@@ -10,6 +10,7 @@ from app.models.document import Document
 from app.models.document_version import DocumentVersion
 from app.models.user import User
 from app.services.storage_service import build_file_key, upload_file
+from app.processing.parser_factory import extract_text_from_file
 
 ALLOWED_EXTENSIONS = {
     "pdf", "docx", "pptx", "txt", "csv", "xlsx", "xls",
@@ -45,13 +46,20 @@ async def create_document(
         uploaded_by_id=current_user.id,
         title=file.filename,
         file_type=extension,
-        status="uploaded",
+        status="processing",
     )
     db.add(document)
     await db.flush()
 
     file_key = build_file_key(current_user.organization_id, file.filename)
     upload_file(file_key, file_bytes, file.content_type or "application/octet-stream")
+
+    try:
+        extracted_text = extract_text_from_file(extension, file_bytes)
+        document.extracted_text = extracted_text
+        document.status = "indexed"
+    except Exception:
+        document.status = "failed"
 
     version = DocumentVersion(
         document_id=document.id,
