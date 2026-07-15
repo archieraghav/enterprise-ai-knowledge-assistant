@@ -12,6 +12,10 @@ from app.models.user import User
 from app.services.storage_service import build_file_key, upload_file
 from app.processing.parser_factory import extract_text_from_file
 
+from app.core.logging import get_logger
+
+logger = get_logger(__name__)
+
 ALLOWED_EXTENSIONS = {
     "pdf", "docx", "pptx", "txt", "csv", "xlsx", "xls",
     "png", "jpg", "jpeg", "eml",
@@ -60,6 +64,7 @@ async def create_document(
         document.status = "indexed"
     except Exception:
         document.status = "failed"
+        extracted_text = None
 
     version = DocumentVersion(
         document_id=document.id,
@@ -69,6 +74,20 @@ async def create_document(
         original_filename=file.filename,
     )
     db.add(version)
+
+    if extracted_text:
+        from app.ai.ingestion_pipeline import ingest_document_text
+
+        try:
+            ingest_document_text(
+                organization_id=current_user.organization_id,
+                document_id=document.id,
+                document_title=file.filename,
+                extracted_text=extracted_text,
+            )
+        except Exception:
+            logger.exception("Vector ingestion failed for document %s", document.id)
+            document.status = "failed"
 
     await db.commit()
     await db.refresh(document)
