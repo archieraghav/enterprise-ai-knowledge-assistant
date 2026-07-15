@@ -33,7 +33,7 @@ async def test_upload_document_success(client: AsyncClient) -> None:
     body = response.json()
     assert body["title"] == "report.txt"
     assert body["file_type"] == "txt"
-    assert body["status"] == "uploaded"
+    assert body["status"] == "indexed"
 
 
 @pytest.mark.asyncio
