@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     aws_region: str = "ap-south-1"
     s3_bucket_name: str = ""
     max_upload_size_mb: int = 25
+    tesseract_cmd_path: str = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
 
     @property
     def database_url(self) -> str:
