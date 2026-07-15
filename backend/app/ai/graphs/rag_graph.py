@@ -28,11 +28,15 @@ async def generate_node(state: RAGState) -> dict:
     if not chunks:
         return {"answer": "I couldn't find any relevant information in the uploaded documents to answer this question."}
 
-    prompt = build_qa_prompt(state["question"], chunks)
-    llm = get_llm()
-    answer = await llm.generate(prompt, system_prompt=SYSTEM_PROMPT)
-    return {"answer": answer}
+    from app.ai.language_service import build_language_instruction
 
+    prompt = build_qa_prompt(state["question"], chunks)
+    language_instruction = build_language_instruction(state["question"])
+    system_prompt = SYSTEM_PROMPT + language_instruction
+
+    llm = get_llm()
+    answer = await llm.generate(prompt, system_prompt=system_prompt)
+    return {"answer": answer}
 
 async def cite_node(state: RAGState) -> dict:
     """Format retrieved chunks into clean, deduplicated citations."""
