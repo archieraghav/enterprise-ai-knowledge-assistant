@@ -30,6 +30,7 @@ class Settings(BaseSettings):
     aws_secret_access_key: str = ""
     aws_region: str = "ap-south-1"
     s3_bucket_name: str = ""
+    max_upload_size_mb: int = 25
 
     @property
     def database_url(self) -> str:
