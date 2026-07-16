@@ -141,3 +141,53 @@ export async function* streamAnswer(question: string, token: string): AsyncGener
     }
   }
 }
+
+export interface AdminUser {
+  id: string;
+  email: string;
+  full_name: string;
+  role: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  created_at: string;
+}
+
+export interface OrganizationMetrics {
+  total_users: number;
+  active_users: number;
+  total_documents: number;
+  indexed_documents: number;
+  failed_documents: number;
+  total_conversations: number;
+}
+
+export interface DailyQueryCount {
+  day: string;
+  count: number;
+}
+
+export interface AnalyticsData {
+  queries_last_7_days: DailyQueryCount[];
+  total_queries: number;
+  feedback_summary: {
+    total_feedback: number;
+    positive_count: number;
+    negative_count: number;
+    positive_rate: number;
+  };
+}
+
+export async function getOrganizationUsers(): Promise<{ items: AdminUser[]; total: number }> {
+  const response = await api.get("/admin/users");
+  return response.data;
+}
+
+export async function getOrganizationMetrics(): Promise<OrganizationMetrics> {
+  const response = await api.get<OrganizationMetrics>("/admin/metrics");
+  return response.data;
+}
+
+export async function getAnalytics(): Promise<AnalyticsData> {
+  const response = await api.get<AnalyticsData>("/analytics");
+  return response.data;
+}

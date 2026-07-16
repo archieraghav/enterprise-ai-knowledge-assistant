@@ -4,6 +4,7 @@ import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import DocumentsPage from "./pages/Documents";
 import ChatPage from "./pages/Chat";
+import AdminPage from "./pages/Admin";
 
 function HomePage() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -38,6 +39,12 @@ function HomePage() {
           >
             View Document Library
           </Link>
+          <Link
+            to="/admin"
+            className="block w-full text-center border border-slate-300 text-slate-700 rounded-lg py-2.5 font-medium hover:bg-slate-50 transition"
+          >
+            Admin Dashboard
+          </Link>
           <button
             onClick={logout}
             className="w-full border border-slate-300 text-slate-700 rounded-lg py-2.5 font-medium hover:bg-slate-50 transition"
@@ -61,6 +68,7 @@ function App() {
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
           <Route path="/chat" element={<ChatPage />} />
+          <Route path="/admin" element={<AdminPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
