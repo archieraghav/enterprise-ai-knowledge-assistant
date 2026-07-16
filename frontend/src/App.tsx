@@ -1,7 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, Link} from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
+import DocumentsPage from "./pages/Documents";
+
 
 function HomePage() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -24,9 +26,15 @@ function HomePage() {
           <p className="text-slate-700">
             Signed in as <span className="font-medium">{user?.email}</span>
           </p>
+          <Link
+            to="/documents"
+            className="block w-full text-center bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 transition"
+          >
+            View Document Library
+          </Link>
           <button
             onClick={logout}
-            className="w-full bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 transition"
+            className="w-full border border-slate-300 text-slate-700 rounded-lg py-2.5 font-medium hover:bg-slate-50 transition"
           >
             Sign out
           </button>
@@ -44,6 +52,7 @@ function App() {
           <Route path="/" element={<HomePage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/documents" element={<DocumentsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
