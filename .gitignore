@@ -11,3 +11,4 @@ test*.txt
 revenue.txt
 faiss_indexes/
 .env.production
+*.pem
