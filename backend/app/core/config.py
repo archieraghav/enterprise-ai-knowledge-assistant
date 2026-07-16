@@ -41,6 +41,9 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1"
+    enable_cloudwatch_logging: bool = False
+    cloudwatch_log_group: str = "knowledge-assistant"
+    cloudwatch_log_stream: str = "backend"
 
     @property
     def database_url(self) -> str:

@@ -2,10 +2,12 @@ from fastapi import FastAPI
 
 from app.api.v1.router import api_router
 from app.core.config import settings
+from app.core.cloudwatch import configure_cloudwatch_logging
 from app.core.logging import configure_logging
 from app.middleware.error_handler import register_exception_handlers
 
 configure_logging()
+configure_cloudwatch_logging()
 
 app = FastAPI(
     title=settings.app_name,
