@@ -44,6 +44,7 @@ class Settings(BaseSettings):
     enable_cloudwatch_logging: bool = False
     cloudwatch_log_group: str = "knowledge-assistant"
     cloudwatch_log_stream: str = "backend"
+    rate_limit_per_minute: int = 60
 
     @property
     def database_url(self) -> str:

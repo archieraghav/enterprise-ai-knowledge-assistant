@@ -35,9 +35,14 @@ async def generate_node(state: RAGState) -> dict:
     system_prompt = SYSTEM_PROMPT + language_instruction
 
     llm = get_llm()
-    answer = await llm.generate(prompt, system_prompt=system_prompt)
-    return {"answer": answer}
+    try:
+        answer = await llm.generate(prompt, system_prompt=system_prompt)
+    except Exception:
+        logger.exception("LLM generation failed")
+        answer = "The assistant is temporarily unavailable due to high demand. Please try again in a moment."
 
+    return {"answer": answer}
+    
 async def cite_node(state: RAGState) -> dict:
     """Format retrieved chunks into clean, deduplicated citations."""
     citations = format_citations(state["retrieved_chunks"])
