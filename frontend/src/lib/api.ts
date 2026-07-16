@@ -97,3 +97,47 @@ export async function uploadDocument(file: File): Promise<DocumentItem> {
 export async function deleteDocument(documentId: string): Promise<void> {
   await api.delete(`/documents/${documentId}`);
 }
+
+export interface StreamEvent {
+  type: "token" | "done";
+  content?: string;
+  citations?: Array<{ document_id: string; document_title: string; excerpt: string }>;
+}
+
+export async function* streamAnswer(question: string, token: string): AsyncGenerator<StreamEvent> {
+  const response = await fetch(`${API_BASE_URL}/qa/ask/stream`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ question }),
+  });
+
+  if (!response.body) throw new Error("No response body from stream");
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+    const lines = buffer.split("\n\n");
+    buffer = lines.pop() || "";
+
+    for (const line of lines) {
+      if (line.startsWith("data: ")) {
+        const jsonStr = line.slice(6);
+        try {
+          const event: StreamEvent = JSON.parse(jsonStr);
+          yield event;
+        } catch {
+          // Skip malformed chunks rather than crashing the stream.
+        }
+      }
+    }
+  }
+}

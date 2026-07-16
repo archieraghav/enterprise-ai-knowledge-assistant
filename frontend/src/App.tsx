@@ -3,7 +3,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
 import DocumentsPage from "./pages/Documents";
-
+import ChatPage from "./pages/Chat";
 
 function HomePage() {
   const { isAuthenticated, user, logout } = useAuth();
@@ -27,8 +27,14 @@ function HomePage() {
             Signed in as <span className="font-medium">{user?.email}</span>
           </p>
           <Link
-            to="/documents"
+            to="/chat"
             className="block w-full text-center bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 transition"
+          >
+            Open Chat
+          </Link>
+          <Link
+            to="/documents"
+            className="block w-full text-center border border-slate-300 text-slate-700 rounded-lg py-2.5 font-medium hover:bg-slate-50 transition"
           >
             View Document Library
           </Link>
@@ -54,6 +60,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/documents" element={<DocumentsPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="/chat" element={<ChatPage />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>
