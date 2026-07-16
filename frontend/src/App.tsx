@@ -1,8 +1,14 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "./context/AuthContext";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
 
 function HomePage() {
   const { isAuthenticated, user, logout } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center px-4">
@@ -14,23 +20,17 @@ function HomePage() {
           Ask questions about your company documents, powered by RAG.
         </p>
 
-        {isAuthenticated ? (
-          <div className="space-y-3">
-            <p className="text-slate-700">
-              Signed in as <span className="font-medium">{user?.email}</span>
-            </p>
-            <button
-              onClick={logout}
-              className="w-full bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 transition"
-            >
-              Sign out
-            </button>
-          </div>
-        ) : (
-          <p className="text-slate-500 text-sm">
-            Login and registration pages coming tomorrow (Day 54).
+        <div className="space-y-3">
+          <p className="text-slate-700">
+            Signed in as <span className="font-medium">{user?.email}</span>
           </p>
-        )}
+          <button
+            onClick={logout}
+            className="w-full bg-slate-900 text-white rounded-lg py-2.5 font-medium hover:bg-slate-800 transition"
+          >
+            Sign out
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -42,6 +42,8 @@ function App() {
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>

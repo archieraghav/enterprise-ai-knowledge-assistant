@@ -45,6 +45,7 @@ class Settings(BaseSettings):
     cloudwatch_log_group: str = "knowledge-assistant"
     cloudwatch_log_stream: str = "backend"
     rate_limit_per_minute: int = 60
+    cors_allowed_origins: list[str] = ["http://localhost:5173"]
 
     @property
     def database_url(self) -> str:
