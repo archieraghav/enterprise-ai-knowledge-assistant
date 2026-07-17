@@ -42,6 +42,7 @@ class Settings(BaseSettings):
     ollama_base_url: str = "http://localhost:11434"
     ollama_model: str = "llama3.1"
     enable_cloudwatch_logging: bool = False
+    use_secrets_manager: bool = False
     cloudwatch_log_group: str = "knowledge-assistant"
     cloudwatch_log_stream: str = "backend"
     rate_limit_per_minute: int = 60
@@ -64,10 +65,15 @@ class Settings(BaseSettings):
 
 
 def load_settings() -> Settings:
-    """Load settings, preferring AWS Secrets Manager in production environments."""
+    """Load settings, optionally overlaying AWS Secrets Manager values.
+
+    Secrets Manager is only consulted if USE_SECRETS_MANAGER=true is
+    explicitly set — this keeps simple deployments (env vars only, e.g.
+    Render, Railway) working without requiring AWS credentials.
+    """
     base_settings = Settings()
 
-    if base_settings.environment != "production":
+    if not base_settings.use_secrets_manager:
         return base_settings
 
     from app.core.secrets import get_secret
