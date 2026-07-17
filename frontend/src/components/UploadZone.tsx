@@ -31,8 +31,10 @@ export default function UploadZone({ onFileSelected, isUploading }: UploadZonePr
       onDragLeave={() => setIsDragging(false)}
       onDrop={handleDrop}
       onClick={() => fileInputRef.current?.click()}
-      className={`border-2 border-dashed rounded-xl p-10 text-center cursor-pointer transition ${
-        isDragging ? "border-slate-900 bg-slate-50" : "border-slate-300 hover:border-slate-400"
+      className={`border-2 border-dashed rounded-xl p-8 sm:p-10 text-center cursor-pointer transition-colors ${
+        isDragging
+          ? "border-brand-500 bg-brand-50 dark:bg-brand-500/10"
+          : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-400 dark:hover:border-neutral-600"
       }`}
     >
       <input
@@ -43,13 +45,13 @@ export default function UploadZone({ onFileSelected, isUploading }: UploadZonePr
         accept=".pdf,.docx,.pptx,.txt,.csv,.xlsx,.xls,.png,.jpg,.jpeg,.eml"
       />
       {isUploading ? (
-        <p className="text-slate-500 text-sm">Uploading...</p>
+        <p className="text-neutral-500 dark:text-neutral-400 text-sm">Uploading...</p>
       ) : (
         <>
-          <p className="text-slate-700 font-medium mb-1">
+          <p className="text-neutral-700 dark:text-neutral-200 font-medium mb-1 text-sm sm:text-base">
             Drag & drop a file here, or click to browse
           </p>
-          <p className="text-slate-400 text-xs">
+          <p className="text-neutral-400 dark:text-neutral-500 text-xs">
             PDF, DOCX, PPTX, TXT, CSV, Excel, images, or email files
           </p>
         </>

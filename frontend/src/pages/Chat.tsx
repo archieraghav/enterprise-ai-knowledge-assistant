@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, type FormEvent } from "react";
-import { Link } from "react-router-dom";
 import { streamAnswer } from "../lib/api";
 import { useAuth } from "../context/AuthContext";
+import Header from "../components/Header";
 import CitationCard from "../components/CitationCard";
 
 interface Citation {
@@ -48,10 +48,7 @@ export default function ChatPage() {
           setMessages((prev) => {
             const updated = [...prev];
             const last = updated[updated.length - 1];
-            updated[updated.length - 1] = {
-              ...last,
-              content: last.content + event.content,
-            };
+            updated[updated.length - 1] = { ...last, content: last.content + event.content };
             return updated;
           });
         } else if (event.type === "done") {
@@ -83,23 +80,13 @@ export default function ChatPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col">
-      <div className="border-b border-slate-200 bg-white px-4 py-3 flex items-center justify-between">
-        <h1 className="font-semibold text-slate-900">Knowledge Assistant Chat</h1>
-        <div className="flex gap-4 text-sm">
-          <Link to="/documents" className="text-slate-500 hover:underline">
-            Documents
-          </Link>
-          <Link to="/" className="text-slate-500 hover:underline">
-            Home
-          </Link>
-        </div>
-      </div>
+    <div className="min-h-screen flex flex-col bg-neutral-50 dark:bg-neutral-950">
+      <Header />
 
       <div className="flex-1 overflow-y-auto px-4 py-6">
         <div className="max-w-2xl mx-auto space-y-6">
           {messages.length === 0 && (
-            <p className="text-slate-400 text-sm text-center mt-20">
+            <p className="text-neutral-400 dark:text-neutral-600 text-sm text-center mt-20">
               Ask a question about your uploaded documents to get started.
             </p>
           )}
@@ -107,10 +94,10 @@ export default function ChatPage() {
           {messages.map((msg, i) => (
             <div key={i} className={msg.role === "user" ? "flex justify-end" : "flex justify-start"}>
               <div
-                className={`max-w-lg rounded-xl px-4 py-3 ${
+                className={`max-w-[85%] sm:max-w-lg rounded-xl px-4 py-3 ${
                   msg.role === "user"
-                    ? "bg-slate-900 text-white"
-                    : "bg-white border border-slate-200 text-slate-800"
+                    ? "bg-neutral-900 dark:bg-brand-600 text-white"
+                    : "card text-neutral-800 dark:text-neutral-100"
                 }`}
               >
                 <p className="text-sm whitespace-pre-wrap">
@@ -120,7 +107,7 @@ export default function ChatPage() {
 
                 {msg.citations && msg.citations.length > 0 && (
                   <div className="mt-3 space-y-2">
-                    <p className="text-xs font-medium text-slate-400">Sources</p>
+                    <p className="text-xs font-medium text-neutral-400 dark:text-neutral-500">Sources</p>
                     {msg.citations.map((c) => (
                       <CitationCard key={c.document_id} citation={c} />
                     ))}
@@ -133,7 +120,7 @@ export default function ChatPage() {
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} className="border-t border-slate-200 bg-white px-4 py-4">
+      <form onSubmit={handleSubmit} className="border-t border-neutral-200/70 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 backdrop-blur-md px-4 py-4">
         <div className="max-w-2xl mx-auto flex gap-2">
           <input
             type="text"
@@ -141,13 +128,9 @@ export default function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask a question..."
             disabled={isSending}
-            className="flex-1 rounded-lg border border-slate-300 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900 disabled:opacity-50"
+            className="input-field dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:placeholder:text-neutral-500 flex-1"
           />
-          <button
-            type="submit"
-            disabled={isSending || !input.trim()}
-            className="bg-slate-900 text-white rounded-lg px-5 py-2.5 text-sm font-medium hover:bg-slate-800 transition disabled:opacity-50"
-          >
+          <button type="submit" disabled={isSending || !input.trim()} className="btn-primary shrink-0">
             Send
           </button>
         </div>

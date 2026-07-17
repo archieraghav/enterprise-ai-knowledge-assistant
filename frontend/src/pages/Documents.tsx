@@ -1,13 +1,16 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
+import BackgroundGlow from "../components/BackgroundGlow";
 import UploadZone from "../components/UploadZone";
 import { listDocuments, uploadDocument, deleteDocument, type DocumentItem } from "../lib/api";
 
 const STATUS_STYLES: Record<string, string> = {
-  indexed: "bg-green-100 text-green-700",
-  processing: "bg-amber-100 text-amber-700",
-  uploaded: "bg-slate-100 text-slate-700",
-  failed: "bg-red-100 text-red-700",
+  indexed: "bg-emerald-100 text-emerald-700 dark:bg-emerald-950/50 dark:text-emerald-400",
+  processing: "bg-amber-100 text-amber-700 dark:bg-amber-950/50 dark:text-amber-400",
+  uploaded: "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300",
+  failed: "bg-red-100 text-red-700 dark:bg-red-950/50 dark:text-red-400",
 };
 
 export default function DocumentsPage() {
@@ -55,53 +58,60 @@ export default function DocumentsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 px-4 py-10">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-semibold text-slate-900">Document Library</h1>
-          <Link to="/" className="text-sm text-slate-500 hover:underline">
-            ← Back home
-          </Link>
-        </div>
+    <div className="min-h-screen flex flex-col relative">
+      <BackgroundGlow />
+      <Header />
 
-        <div className="mb-8">
-          <UploadZone onFileSelected={handleFileSelected} isUploading={isUploading} />
-        </div>
+      <main className="flex-1 px-4 sm:px-6 py-8 sm:py-10">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="max-w-2xl mx-auto"
+        >
+          <h1 className="text-xl sm:text-2xl font-semibold text-neutral-900 dark:text-white mb-6">Document Library</h1>
 
-        {error && <p className="text-sm text-red-600 mb-4">{error}</p>}
-
-        {isLoading ? (
-          <p className="text-slate-500 text-sm">Loading documents...</p>
-        ) : documents.length === 0 ? (
-          <p className="text-slate-500 text-sm">No documents uploaded yet.</p>
-        ) : (
-          <div className="bg-white rounded-xl border border-slate-200 divide-y divide-slate-100">
-            {documents.map((doc) => (
-              <div key={doc.id} className="flex items-center justify-between px-5 py-4">
-                <div>
-                  <p className="text-sm font-medium text-slate-900">{doc.title}</p>
-                  <p className="text-xs text-slate-400 uppercase">{doc.file_type}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span
-                    className={`text-xs font-medium px-2.5 py-1 rounded-full ${
-                      STATUS_STYLES[doc.status] || "bg-slate-100 text-slate-700"
-                    }`}
-                  >
-                    {doc.status}
-                  </span>
-                  <button
-                    onClick={() => handleDelete(doc.id)}
-                    className="text-xs text-slate-400 hover:text-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="mb-8">
+            <UploadZone onFileSelected={handleFileSelected} isUploading={isUploading} />
           </div>
-        )}
-      </div>
+
+          {error && <p className="text-sm text-red-600 dark:text-red-400 mb-4">{error}</p>}
+
+          {isLoading ? (
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">Loading documents...</p>
+          ) : documents.length === 0 ? (
+            <p className="text-neutral-500 dark:text-neutral-400 text-sm">No documents uploaded yet.</p>
+          ) : (
+            <div className="card divide-y divide-neutral-100 dark:divide-neutral-800">
+              {documents.map((doc) => (
+                <div key={doc.id} className="flex items-center justify-between gap-3 px-4 sm:px-5 py-4">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-neutral-900 dark:text-white truncate">{doc.title}</p>
+                    <p className="text-xs text-neutral-400 dark:text-neutral-500 uppercase">{doc.file_type}</p>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span
+                      className={`text-xs font-medium px-2.5 py-1 rounded-full ${
+                        STATUS_STYLES[doc.status] || "bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                      }`}
+                    >
+                      {doc.status}
+                    </span>
+                    <button
+                      onClick={() => handleDelete(doc.id)}
+                      className="text-xs text-neutral-400 dark:text-neutral-500 hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </motion.div>
+      </main>
+
+      <Footer />
     </div>
   );
 }
