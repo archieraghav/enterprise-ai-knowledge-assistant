@@ -45,7 +45,15 @@ class Settings(BaseSettings):
     cloudwatch_log_group: str = "knowledge-assistant"
     cloudwatch_log_stream: str = "backend"
     rate_limit_per_minute: int = 60
-    cors_allowed_origins: list[str] = ["http://localhost:5173"]
+    cors_allowed_origins_raw: str = '["http://localhost:5173"]'
+
+    @property
+    def cors_allowed_origins(self) -> list[str]:
+        import json
+        try:
+            return json.loads(self.cors_allowed_origins_raw)
+        except json.JSONDecodeError:
+            return [origin.strip() for origin in self.cors_allowed_origins_raw.split(",") if origin.strip()]
 
     @property
     def database_url(self) -> str:
