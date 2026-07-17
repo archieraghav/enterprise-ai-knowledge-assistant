@@ -3,10 +3,9 @@ import json
 import boto3
 from botocore.exceptions import ClientError
 
-from app.core.logging import get_logger
+import logging
 
-logger = get_logger(__name__)
-
+logger = logging.getLogger(__name__)
 
 def get_secret(secret_name: str, region_name: str = "us-east-1") -> dict[str, str] | None:
     """Fetch a JSON secret from AWS Secrets Manager.
