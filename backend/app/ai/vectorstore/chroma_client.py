@@ -7,12 +7,21 @@ _chroma_client: chromadb.ClientAPI | None = None
 
 
 def get_chroma_client() -> chromadb.ClientAPI:
-    """Return a singleton ChromaDB HTTP client, connected to the Docker Compose service."""
+    """Return a singleton ChromaDB HTTP client.
+
+    Uses SSL when connecting to a hosted (non-localhost) ChromaDB instance,
+    since production deployments (e.g. Render) serve over HTTPS. Local
+    development via Docker Compose still uses plain HTTP.
+    """
     global _chroma_client
     if _chroma_client is None:
-        _chroma_client = chromadb.HttpClient(host=settings.chroma_host, port=settings.chroma_port)
+        use_ssl = settings.chroma_host not in ("localhost", "127.0.0.1", "chromadb")
+        _chroma_client = chromadb.HttpClient(
+            host=settings.chroma_host,
+            port=settings.chroma_port,
+            ssl=use_ssl,
+        )
     return _chroma_client
-
 
 def get_or_create_collection(collection_name: str) -> Collection:
     """Return a ChromaDB collection, creating it if it doesn't already exist."""
