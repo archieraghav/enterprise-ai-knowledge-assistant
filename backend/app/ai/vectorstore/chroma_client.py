@@ -7,21 +7,27 @@ _chroma_client: chromadb.ClientAPI | None = None
 
 
 def get_chroma_client() -> chromadb.ClientAPI:
-    """Return a singleton ChromaDB HTTP client.
+    """Return a singleton ChromaDB client.
 
-    Uses SSL when connecting to a hosted (non-localhost) ChromaDB instance,
-    since production deployments (e.g. Render) serve over HTTPS. Local
-    development via Docker Compose still uses plain HTTP.
+    Uses Chroma Cloud (CloudClient) when an API key is configured —
+    the production path. Falls back to a local HttpClient for Docker
+    Compose development when no cloud API key is set.
     """
     global _chroma_client
     if _chroma_client is None:
-        use_ssl = settings.chroma_host not in ("localhost", "127.0.0.1", "chromadb")
-        _chroma_client = chromadb.HttpClient(
-            host=settings.chroma_host,
-            port=settings.chroma_port,
-            ssl=use_ssl,
-        )
+        if settings.chroma_api_key:
+            _chroma_client = chromadb.CloudClient(
+                api_key=settings.chroma_api_key,
+                tenant=settings.chroma_tenant,
+                database=settings.chroma_database,
+            )
+        else:
+            _chroma_client = chromadb.HttpClient(
+                host=settings.chroma_host,
+                port=settings.chroma_port,
+            )
     return _chroma_client
+
 
 def get_or_create_collection(collection_name: str) -> Collection:
     """Return a ChromaDB collection, creating it if it doesn't already exist."""
@@ -32,6 +38,7 @@ def get_or_create_collection(collection_name: str) -> Collection:
 def get_organization_collection_name(organization_id: str) -> str:
     """Build a namespaced collection name so each organization's vectors stay isolated."""
     return f"org_{organization_id.replace('-', '_')}"
+
 
 def search_collection(
     collection_name: str,

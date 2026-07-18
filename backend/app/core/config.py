@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     tesseract_cmd_path: str = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
     chroma_host: str = "localhost"
     chroma_port: int = 8001
+    chroma_api_key: str = ""
+    chroma_tenant: str = ""
+    chroma_database: str = "knowledge-assistant-prod"
     llm_provider: str = "gemini"
     gemini_api_key: str = ""
     gemini_model: str = "gemini-2.0-flash"
