@@ -39,9 +39,9 @@ async def readiness_check() -> dict[str, str]:
         client = get_chroma_client()
         client.heartbeat()
         checks["vector_store"] = "ok"
-    except Exception:
+    except Exception as exc:
         logger.exception("Readiness check: vector store unreachable")
-        checks["vector_store"] = "unreachable"
+        checks["vector_store"] = f"unreachable: {exc}"
 
     overall_status = "ok" if all(v == "ok" for v in checks.values()) else "degraded"
 
