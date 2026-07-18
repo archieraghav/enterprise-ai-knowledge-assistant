@@ -21,7 +21,7 @@ openpyxl==3.1.5
 pytesseract==0.3.13
 Pillow==10.4.0
 sentence-transformers==3.2.1
-chromadb==0.5.15
+chromadb==1.5.9
 google-generativeai==0.8.3
 openai==1.54.4
 langgraph==0.2.53
